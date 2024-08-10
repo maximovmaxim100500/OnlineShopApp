@@ -5,43 +5,40 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.controller.dto.RegisterDto;
 import ru.skypro.homework.service.AuthService;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UserDetailsManager manager;
-    private final PasswordEncoder encoder;
+    private final UserDetailsManager userDetailsManager;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder) {
-        this.manager = manager;
-        this.encoder = passwordEncoder;
+    public AuthServiceImpl(UserDetailsManager userDetailsManager, PasswordEncoder passwordEncoder) {
+        this.userDetailsManager = userDetailsManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
+    public boolean authenticate(String username, String password) {
+        if (!userDetailsManager.userExists(username)) {
             return false;
         }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword());
+        UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
+        return passwordEncoder.matches(password, userDetails.getPassword());
     }
 
     @Override
-    public boolean register(Register register) {
-        if (manager.userExists(register.getUsername())) {
+    public boolean register(RegisterDto registerDto) {
+        if (userDetailsManager.userExists(registerDto.getUsername())) {
             return false;
         }
-        manager.createUser(
-                User.builder()
-                        .passwordEncoder(this.encoder::encode)
-                        .password(register.getPassword())
-                        .username(register.getUsername())
-                        .roles(register.getRole().name())
-                        .build());
+        UserDetails userDetails = User.builder()
+                .username(registerDto.getUsername())
+                .password(passwordEncoder.encode(registerDto.getPassword()))
+                .roles(registerDto.getRole().name()) // Используйте name() для получения строки роли
+                .build();
+        userDetailsManager.createUser(userDetails);
         return true;
     }
-
 }

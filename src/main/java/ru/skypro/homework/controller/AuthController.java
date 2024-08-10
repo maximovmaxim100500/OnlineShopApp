@@ -4,37 +4,36 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import ru.skypro.homework.dto.Login;
-import ru.skypro.homework.dto.Register;
+import org.springframework.web.bind.annotation.*;
+import ru.skypro.homework.controller.dto.LoginDto;
+import ru.skypro.homework.controller.dto.RegisterDto;
 import ru.skypro.homework.service.AuthService;
-
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Login login) {
-        if (authService.login(login.getUsername(), login.getPassword())) {
-            return ResponseEntity.ok().build();
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+        boolean isAuthenticated = authService.authenticate(loginDto.getUsername(), loginDto.getPassword());
+        if (isAuthenticated) {
+            return ResponseEntity.ok().build(); // Возвращает 200 OK при успешной аутентификации
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Возвращает 401 Unauthorized при ошибке аутентификации
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Register register) {
-        if (authService.register(register)) {
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<?> register(@RequestBody RegisterDto registerDto) {
+        boolean isRegistered = authService.register(registerDto);
+        if (isRegistered) {
+            return ResponseEntity.status(HttpStatus.CREATED).build(); // Возвращает 201 Created при успешной регистрации
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // Возвращает 400 Bad Request при ошибке регистрации
         }
     }
 }
