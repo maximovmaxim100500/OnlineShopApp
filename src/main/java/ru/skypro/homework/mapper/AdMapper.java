@@ -9,7 +9,15 @@ import ru.skypro.homework.db.entity.Ad;
 
 @Mapper(componentModel = "spring")
 public interface AdMapper {
+    @Mapping(source = "id", target = "pk")
+    @Mapping(source = "user.id", target = "author")
     AdDto toDto(Ad ad);
+
+    @Mapping(source = "pk", target = "id")
+    @Mapping(source = "author", target = "user.id")
     Ad toEntity(AdDto adDto);
+
+    @Mapping(source = "pk", target = "id")
+    @Mapping(source = "author", target = "user.id")
     void updateEntityFromDto(AdDto adDto, @MappingTarget Ad ad);
 }

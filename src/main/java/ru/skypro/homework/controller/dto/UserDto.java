@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.skypro.homework.controller.dto.enums.Role;
 
 @Data
 @NoArgsConstructor
@@ -11,11 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserDto {
     private Long id;
-    private String username;
     private String email;
     private String firstName;
     private String lastName;
     private String phone;
-    private String role;
+    private Role role;
     private String password;
 }
