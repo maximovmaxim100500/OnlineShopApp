@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AdDto {
-    private Integer author;
-    private String image;
-    private Integer pk;
-    private Integer price;
-    private String title;
+public class UpdateUser {
+    private String firstName;
+    private String lastName;
+    private String phone;
 }

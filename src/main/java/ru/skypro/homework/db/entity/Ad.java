@@ -23,10 +23,13 @@ public class Ad {
     private String title;
 
     @Column(nullable = false)
+    private Integer price;
+
+    @Column(nullable = false)
     private String description;
 
     @Column(name = "image_url")
-    private String imageUrl;
+    private String image;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

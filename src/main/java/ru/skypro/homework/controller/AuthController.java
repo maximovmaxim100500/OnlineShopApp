@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.controller.dto.LoginDto;
-import ru.skypro.homework.controller.dto.RegisterDto;
+import ru.skypro.homework.controller.dto.Login;
+import ru.skypro.homework.controller.dto.Register;
 import ru.skypro.homework.service.AuthService;
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -18,7 +18,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> login(@RequestBody Login loginDto) {
         boolean isAuthenticated = authService.authenticate(loginDto.getUsername(), loginDto.getPassword());
         if (isAuthenticated) {
             return ResponseEntity.ok().build(); // Возвращает 200 OK при успешной аутентификации
@@ -28,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<?> register(@RequestBody Register registerDto) {
         boolean isRegistered = authService.register(registerDto);
         if (isRegistered) {
             return ResponseEntity.status(HttpStatus.CREATED).build(); // Возвращает 201 Created при успешной регистрации

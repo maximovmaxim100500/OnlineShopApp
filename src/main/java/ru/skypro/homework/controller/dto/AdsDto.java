@@ -5,14 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AdDto {
-    private Integer author;
-    private String image;
-    private Integer pk;
-    private Integer price;
-    private String title;
+public class AdsDto {
+    private Integer count;
+    private List<AdDto> results;
 }

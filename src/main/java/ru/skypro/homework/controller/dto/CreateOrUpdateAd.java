@@ -5,14 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Size;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AdDto {
-    private Integer author;
-    private String image;
-    private Integer pk;
+public class CreateOrUpdateAd {
+    @Size(min = 8, max = 64)
+    private String description;
+    @Size(min = 0, max = 10000000)
     private Integer price;
+    @Size(min = 4, max = 32)
     private String title;
 }

@@ -1,6 +1,5 @@
 package ru.skypro.homework.service;
 
-import ru.skypro.homework.controller.dto.RegisterDto;
 import ru.skypro.homework.controller.dto.UserDto;
 
 import java.util.List;

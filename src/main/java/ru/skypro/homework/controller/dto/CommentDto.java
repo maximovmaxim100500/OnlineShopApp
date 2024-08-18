@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CommentDto {
-    private Long id;
     private Integer author;
     private String authorImage;
     private String authorFirstName;

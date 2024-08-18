@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LoginDto {
-    private Long id;
-    private String username;
-    private String password;
+public class CommentsDto {
+    private Integer count;
+    private List<CommentDto> results;
 }
