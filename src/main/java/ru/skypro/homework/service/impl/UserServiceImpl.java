@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,8 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    // Разрешить доступ только владельцу записи
+    @PreAuthorize("#userId == authentication.principal.id")
     @Override
     public UserDto getUserById(Long id) {
         return userMapper.toDto(userRepository.findById(id).orElse(null));
@@ -58,6 +61,8 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
+    // Только пользователи с ролью ADMIN могут выполнить этот метод или сам владелец записи
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
