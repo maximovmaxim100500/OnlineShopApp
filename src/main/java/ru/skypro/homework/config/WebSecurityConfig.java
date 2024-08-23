@@ -43,12 +43,6 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public UserDetailsManager userDetailsManager(DataSource dataSource, PasswordEncoder passwordEncoder) {
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-        return jdbcUserDetailsManager;
-    }
-
-    @Bean
 //    @PreAuthorize("hasRole") - проверка роли пользователя
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf()
