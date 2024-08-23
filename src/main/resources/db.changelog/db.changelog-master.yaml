@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - property:
+      name: changeset.id.sequence
+      value: 1
+
+  - changeSet:
+      id: 1
+      author: mmaksimov
+      changes:
+        - sqlFile:
+            path: db.changelog/scripts/createUserTable.sql
