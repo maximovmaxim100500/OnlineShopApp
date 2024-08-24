@@ -9,3 +9,17 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db.changelog/scripts/createUserTable.sql
+
+  - changeSet:
+      id: 2
+      author: mmaksimov
+      changes:
+        - sqlFile:
+            path: db.changelog/scripts/createAdsTable.sql
+
+  - changeSet:
+      id: 3
+      author: mmaksimov
+      changes:
+        - sqlFile:
+            path: db.changelog/scripts/createCommentsTable.sql
