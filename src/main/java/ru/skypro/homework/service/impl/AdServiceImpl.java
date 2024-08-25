@@ -25,10 +25,10 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdDto createAd(AdDto adDto) {
-         return new AdDto();
-//        Ad ad = adMapper.toEntity(adDto);
-//        Ad savedAd = adRepository.save(ad);
-//        return adMapper.toDto(savedAd);
+//         return new AdDto();
+        Ad ad = adMapper.toEntity(adDto);
+        Ad savedAd = adRepository.save(ad);
+        return adMapper.toDto(savedAd);
     }
 
     @Override
