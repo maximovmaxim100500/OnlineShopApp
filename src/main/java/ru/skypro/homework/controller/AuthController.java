@@ -21,7 +21,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Login loginDto) {
         boolean isAuthenticated = authService.authenticate(loginDto.getUsername(), loginDto.getPassword());
         if (isAuthenticated) {
-            return ResponseEntity.ok().build(); // Возвращает 200 OK при успешной аутентификации
+            return ResponseEntity.ok().body("Successfully"); // Возвращает 200 OK при успешной аутентификации
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Возвращает 401 Unauthorized при ошибке аутентификации
         }
@@ -31,7 +31,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody Register registerDto) {
         boolean isRegistered = authService.register(registerDto);
         if (isRegistered) {
-            return ResponseEntity.status(HttpStatus.CREATED).build(); // Возвращает 201 Created при успешной регистрации
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully"); // Возвращает 201 Created при успешной регистрации
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // Возвращает 400 Bad Request при ошибке регистрации
         }
