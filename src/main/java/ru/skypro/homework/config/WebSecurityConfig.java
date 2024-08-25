@@ -31,19 +31,7 @@ public class WebSecurityConfig {
             "/login",
             "/register"
     };
-
     @Bean
-    public UserDetailsManager userDetailsManager(PasswordEncoder passwordEncoder) {
-        UserDetails user = User.builder()
-                .username("user@gmail.com")
-                .password(passwordEncoder.encode("password"))
-                .roles(Role.ADMIN.name())
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
-
-    @Bean
-//    @PreAuthorize("hasRole") - проверка роли пользователя
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf()
                 .disable()

@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "users")
-public class User implements UserDetails {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,7 +42,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    @Pattern(regexp = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
+//    @Pattern(regexp = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
     private String phone;
 
     @Column(nullable = false)
@@ -58,39 +58,4 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // getAuthorities() — возвращает права пользователя в виде коллекции
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email; // возвращает email как имя пользователя
-    }
-
-    // Метод возвращает, истек ли срок действия аккаунта. Всегда возвращает true, что означает, что аккаунт не истек.
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    // Метод возвращает, заблокирован ли аккаунт. Всегда возвращает true, что означает, что аккаунт не заблокирован.
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    // Метод возвращает, истек ли срок действия учетных данных. Всегда возвращает true, что означает,
-    // что учетные данные не истекли.
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    // Метод возвращает, активен ли аккаунт. Всегда возвращает true, что означает, что аккаунт активен.
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }
