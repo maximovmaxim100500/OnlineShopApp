@@ -20,13 +20,13 @@ public class Ad {
     private Long id;
 
     @Column(nullable = false)
-    private String title;
+    private String title; // нужна для CreateOrUpdateAd
 
     @Column(nullable = false)
-    private Integer price;
+    private Integer price; // нужна для CreateOrUpdateAd
 
     @Column(nullable = false)
-    private String description;
+    private String description; // нужна для CreateOrUpdateAd
 
     @Column(name = "image_url")
     private String image;

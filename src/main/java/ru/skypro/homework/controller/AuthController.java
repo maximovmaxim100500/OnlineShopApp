@@ -8,21 +8,24 @@ import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.controller.dto.Login;
 import ru.skypro.homework.controller.dto.Register;
 import ru.skypro.homework.service.AuthService;
-@Slf4j
-@CrossOrigin(value = "http://localhost:3000")
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Login loginDto) {
+        log.info("Авторизация для пользователя с именем " + loginDto.getUsername());
         boolean isAuthenticated = authService.authenticate(loginDto.getUsername(), loginDto.getPassword());
         if (isAuthenticated) {
+            log.info("Успешная авторизация для пользователя с именем " + loginDto.getUsername());
             return ResponseEntity.ok().body("Successfully"); // Возвращает 200 OK при успешной аутентификации
         } else {
+            log.info("Пользователь с именем " + loginDto.getUsername() + "не найден");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Возвращает 401 Unauthorized при ошибке аутентификации
         }
     }

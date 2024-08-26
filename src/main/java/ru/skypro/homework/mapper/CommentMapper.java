@@ -6,6 +6,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.controller.dto.CommentDto;
+import ru.skypro.homework.controller.dto.CreateOrUpdateComment;
 import ru.skypro.homework.db.entity.Comment;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ public interface CommentMapper {
     @Mapping(source = "author", target = "user.id")
     @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "integerToLocalDateTime")
     void updateEntityFromDto(CommentDto commentDto, @MappingTarget Comment comment);
+
+    Comment toCommentFromCreateComment(CreateOrUpdateComment createComment);
 
     @Named("localDateTimeToInteger")
     static Integer localDateTimeToInteger(LocalDateTime localDateTime) {

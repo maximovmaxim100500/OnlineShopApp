@@ -1,14 +1,18 @@
 package ru.skypro.homework.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import ru.skypro.homework.controller.dto.NewPassword;
+import ru.skypro.homework.controller.dto.UpdateUser;
 import ru.skypro.homework.controller.dto.UserDto;
 import ru.skypro.homework.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,38 +26,27 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto, Authentication authentication) {
-
-        UserDto createdUser = userService.createUser(userDto);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
- //       return ResponseEntity.ok(new UserDto());
+    @PostMapping("/set_password")
+    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPasswordDto,
+                                                   @AuthenticationPrincipal UserDetails userDetails) {
+        userService.setPassword(newPasswordDto, userDetails.getUsername());
+        return ResponseEntity.ok(newPasswordDto);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-        UserDto userDto = userService.getUserById(id);
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
- //       return ResponseEntity.ok(new UserDto());
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getUser(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userService.getUser(userDetails.getUsername()));
     }
 
-    @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> userDtos = userService.getAllUsers();
-        return new ResponseEntity<>(userDtos, HttpStatus.OK);
- //       return ResponseEntity.ok(new ArrayList<UserDto>());
+    @PatchMapping("/me")
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userService.updateUser(userDto, userDetails.getUsername()));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        UserDto updatedUser = userService.updateUser(id, userDto);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-//       return ResponseEntity.ok(new UserDto());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUser updateUserDto,
+                                              @PathVariable Long id) {
+        return ResponseEntity.ok(userService.updateUserDto(updateUserDto, id));
     }
 }
