@@ -42,7 +42,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-//    @Pattern(regexp = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
+    @Pattern(regexp = "(\\+7|8)?\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
     private String phone;
 
     @Column(nullable = false)

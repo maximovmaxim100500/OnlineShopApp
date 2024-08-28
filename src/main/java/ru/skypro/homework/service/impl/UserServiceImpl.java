@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.controller.dto.NewPassword;
 import ru.skypro.homework.controller.dto.UpdateUser;
 import ru.skypro.homework.controller.dto.UserDto;
@@ -16,6 +17,7 @@ import ru.skypro.homework.exception.UserWithIdNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.service.UserService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final ImageService imageService;
 
 
     @Override
@@ -75,5 +78,20 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("Обновлен пользователь с id: " + id);
         return userMapper.toDto(user);
+    }
+
+    @Override
+    public void updateAvatar(MultipartFile image, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserWithEmailNotFoundException(email));
+        imageService.deleteFile(user.getImage());
+        user.setImage(imageService.uploadImage(image, "/users"));
+        userRepository.save(user);
+        log.trace("Avatar updated");
+    }
+
+    @Override
+    public byte[] getImage(String name) throws IOException {
+        return imageService.downloadImage (name);
     }
 }

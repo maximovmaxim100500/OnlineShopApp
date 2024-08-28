@@ -13,6 +13,7 @@ import ru.skypro.homework.service.CommentService;
 
 import java.util.Objects;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/comments")
 public class CommentController {
