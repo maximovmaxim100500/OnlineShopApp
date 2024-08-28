@@ -1,13 +1,16 @@
 package ru.skypro.homework.service;
 
 import ru.skypro.homework.controller.dto.AdDto;
+import ru.skypro.homework.controller.dto.AdsDto;
+import ru.skypro.homework.controller.dto.CreateOrUpdateAd;
 
-import java.util.List;
+import javax.transaction.Transactional;
 
 public interface AdService {
-    AdDto createAd(AdDto adDto);
-    AdDto getAdById(Long id);
-    List<AdDto> getAllAds();
-    AdDto updateAd(Long id, AdDto adDto);
-    void deleteAd(Long id);
+    AdDto createAd(CreateOrUpdateAd createAds, String email);
+    AdsDto getAllAds();
+    AdsDto getMyAds(String email);
+    AdDto updateAd(CreateOrUpdateAd createOrUpdateAd, Long id);
+    @Transactional
+    void removeAd(Long id);
 }

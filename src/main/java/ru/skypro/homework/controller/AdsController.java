@@ -3,11 +3,15 @@ package ru.skypro.homework.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.controller.dto.AdDto;
+import ru.skypro.homework.controller.dto.AdsDto;
+import ru.skypro.homework.controller.dto.CreateOrUpdateAd;
 import ru.skypro.homework.service.AdService;
 
-import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/ads")
@@ -19,38 +23,42 @@ public class AdsController {
     public AdsController(AdService adService) {
         this.adService = adService;
     }
-
-    @PostMapping
-    public ResponseEntity<AdDto> createAd(@RequestBody AdDto adDto) {
-        AdDto createdAd = adService.createAd(adDto);
-        return new ResponseEntity<>(createdAd, HttpStatus.CREATED);
-//        return ResponseEntity.ok(new AdDto());
+    @GetMapping("/myAds")
+    public ResponseEntity<AdsDto> getMyAds(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(adService.getMyAds(userDetails.getUsername()));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AdDto> getAdById(@PathVariable Long id) {
-        AdDto adDto = adService.getAdById(id);
-        return new ResponseEntity<>(adDto, HttpStatus.OK);
-//        return ResponseEntity.ok(new AdDto());
+    @PostMapping
+    public ResponseEntity<AdDto> createAd(@AuthenticationPrincipal UserDetails userDetails,
+                                          @RequestBody CreateOrUpdateAd createAds) {
+        return ResponseEntity.ok(adService.createAd(createAds, userDetails.getUsername()));
     }
 
     @GetMapping
-    public ResponseEntity<List<AdDto>> getAllAds() {
-        List<AdDto> adDtos = adService.getAllAds();
-        return new ResponseEntity<>(adDtos, HttpStatus.OK);
-//        return ResponseEntity.ok(new ArrayList<AdDto>());
+    public ResponseEntity<AdsDto> getAllAds() {
+        AdsDto adsDto = adService.getAllAds();
+        return new ResponseEntity<>(adsDto, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AdDto> updateAd(@PathVariable Long id, @RequestBody AdDto adDto) {
-        AdDto updatedAd = adService.updateAd(id, adDto);
-        return new ResponseEntity<>(updatedAd, HttpStatus.OK);
-//        return ResponseEntity.ok(new AdDto());
+    public ResponseEntity<AdDto> updateAd(@AuthenticationPrincipal UserDetails userDetails,
+                                          @RequestBody CreateOrUpdateAd createOrUpdateAdDto,
+                                          @PathVariable Long id) {
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
+                || adService.getMyAds(userDetails.getUsername()).getResults().stream().anyMatch(a -> Objects.equals(a.getPk(), id))) {
+            return ResponseEntity.ok(adService.updateAd(createOrUpdateAdDto, id));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAd(@PathVariable Long id) {
-        adService.deleteAd(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<HttpStatus> deleteAd(@AuthenticationPrincipal UserDetails userDetails,
+                                               @PathVariable Long id) {
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
+                || adService.getMyAds(userDetails.getUsername()).getResults().stream().anyMatch(a -> Objects.equals(a.getPk(), id))) {
+            adService.removeAd(id);
+            return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

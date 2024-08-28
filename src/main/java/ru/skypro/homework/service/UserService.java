@@ -1,13 +1,15 @@
 package ru.skypro.homework.service;
 
+import ru.skypro.homework.controller.dto.NewPassword;
+import ru.skypro.homework.controller.dto.UpdateUser;
 import ru.skypro.homework.controller.dto.UserDto;
 
-import java.util.List;
 
 public interface UserService {
-    List<UserDto> getAllUsers();
-    UserDto getUserById(Long id);
-    UserDto createUser(UserDto userDto);
-    UserDto updateUser(Long id, UserDto userDto);
-    void deleteUser(Long id);
+    boolean setPassword(NewPassword newPasswordDto, String email);
+    UserDto getUser(String email);
+
+    UserDto updateUser(UserDto userDto, String email);
+
+    UserDto updateUserDto(UpdateUser updateUserDto, Long id);
 }

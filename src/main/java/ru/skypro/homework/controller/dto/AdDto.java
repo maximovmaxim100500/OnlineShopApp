@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AdDto {
-    private Integer author;
+    private Long author; // id автора
     private String image;
-    private Integer pk;
+    private Long pk; // id объявления
     private Integer price;
     private String title;
 }

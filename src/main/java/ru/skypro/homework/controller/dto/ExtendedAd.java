@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ExtendedAd {
-    private Integer pk;
+    private Long pk; // id объявления
     private String authorFirstName;
     private String authorLastName;
     private String description;

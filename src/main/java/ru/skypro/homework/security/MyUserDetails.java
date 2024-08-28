@@ -75,6 +75,6 @@ public class MyUserDetails implements UserDetails {
     // Возвращает true, если учетная запись включена
     @Override
     public boolean isEnabled() {
-        return true; // Можно добавить логику проверки включения аккаунта
+        return true;
     }
 }
