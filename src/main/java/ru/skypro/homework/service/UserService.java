@@ -12,7 +12,7 @@ public interface UserService {
     boolean setPassword(NewPassword newPasswordDto, String email);
     UserDto getUser(String email);
 
-    UserDto updateUser(UserDto userDto, String email);
+    UserDto updateUser(UpdateUser updateUser, String email);
 
     UserDto updateUserDto(UpdateUser updateUserDto, Long id);
     void updateAvatar(MultipartFile image, String email);

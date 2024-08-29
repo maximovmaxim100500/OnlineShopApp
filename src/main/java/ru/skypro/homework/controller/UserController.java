@@ -40,9 +40,9 @@ public class UserController {
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, // updateUser должен быть
+    public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUser updateUser,
                                               @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(userService.updateUser(userDto, userDetails.getUsername()));
+        return ResponseEntity.ok(userService.updateUser(updateUser, userDetails.getUsername()));
     }
 
     @PatchMapping("/{id}")

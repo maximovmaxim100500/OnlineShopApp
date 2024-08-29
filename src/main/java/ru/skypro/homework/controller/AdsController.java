@@ -29,7 +29,7 @@ public class AdsController {
         this.adService = adService;
     }
 
-    @GetMapping("/myAds")
+    @GetMapping("/me")
     public ResponseEntity<AdsDto> getMyAds(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(adService.getMyAds(userDetails.getUsername()));
     }

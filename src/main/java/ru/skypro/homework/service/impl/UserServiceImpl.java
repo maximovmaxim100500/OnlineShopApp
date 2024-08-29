@@ -59,10 +59,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, String email) {
+    public UserDto updateUser(UpdateUser updateUser, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
-        userMapper.updateEntityFromDto(userDto, user);
+        userMapper.updateUser(updateUser, user);
         userRepository.save(user);
         log.info("Пользователь обновлен");
         return userMapper.toDto(user);
