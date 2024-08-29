@@ -23,9 +23,10 @@ public interface UserMapper {
     User toEntity(UserDto userDto);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "image", ignore = true)
     @Mapping(target = "email", ignore = true)
     @Mapping(source = "role", target = "role")
     void updateEntityFromDto(UserDto userDto, @MappingTarget User user);
 
-    void updateUser(UpdateUser updateAdDto, @MappingTarget User user);
+    void updateUser(UpdateUser updateUser, @MappingTarget User user);
 }

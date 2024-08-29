@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.controller.dto.AdDto;
 import ru.skypro.homework.controller.dto.AdsDto;
 import ru.skypro.homework.controller.dto.CreateOrUpdateAd;
+import ru.skypro.homework.controller.dto.ExtendedAd;
 import ru.skypro.homework.db.entity.Ad;
 import ru.skypro.homework.db.repository.AdRepository;
 import ru.skypro.homework.db.repository.CommentRepository;
@@ -16,6 +17,7 @@ import ru.skypro.homework.exception.UserWithEmailNotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.service.AdService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -26,22 +28,23 @@ public class AdServiceImpl implements AdService {
     private final AdMapper adMapper;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final ImageService imageService;
 
     @Autowired
     public AdServiceImpl(AdRepository adRepository, AdMapper adMapper, UserRepository userRepository,
-                         CommentRepository commentRepository) {
+                         CommentRepository commentRepository, ImageService imageService) {
         this.adRepository = adRepository;
         this.adMapper = adMapper;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.imageService = imageService;
     }
-
     @Override
-    public AdDto createAd(CreateOrUpdateAd createAds, String email) {
+    public AdDto createAd(CreateOrUpdateAd createAds, String email, MultipartFile image) {
         Ad ad = adMapper.toAdsFromCreateAds(createAds);
         ad.setUser(userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserWithEmailNotFoundException(email)));
-        ad.setImage("/путь к фоточке " + ad.getId()); // вот эту строку надо будет заменить потом
+        ad.setImage(imageService.uploadImage(image, "/ads")); // вот эту строку надо будет заменить потом
         adRepository.save(ad);
         return adMapper.toDto(ad);
     }
@@ -59,6 +62,12 @@ public class AdServiceImpl implements AdService {
         adsDto.setResults(adDtoList);
         log.info("Возвращаем результат");
         return adsDto;
+    }
+    @Override
+    public ExtendedAd getAds(Long id) {
+        Ad ads = adRepository.findById(id)
+                .orElseThrow(() -> new AdsNotFoundException("Ads not found by id: " + id));
+        return adMapper.toExtendedAds (ads);
     }
 
     @Override
@@ -94,5 +103,20 @@ public class AdServiceImpl implements AdService {
                 .orElseThrow(() -> new AdsNotFoundException("Ad not found by id: " + id));
         log.info("Removed Ads with id: " + id);
         adRepository.delete(ad);
+    }
+
+    @Override
+    public void updateAdsImage(Long id, MultipartFile image) {
+        Ad ads = adRepository.findById(id)
+                .orElseThrow(() -> new AdsNotFoundException("Ads not found"));
+        imageService.deleteFile(ads.getImage());
+        ads.setImage(imageService.uploadImage(image, "/ads"));
+        adRepository.save(ads);
+    }
+
+
+    @Override
+    public byte[] getImage(String name) throws IOException {
+        return imageService.downloadImage(name);
     }
 }

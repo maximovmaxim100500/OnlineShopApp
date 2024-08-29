@@ -9,9 +9,9 @@ import ru.skypro.homework.controller.dto.Login;
 import ru.skypro.homework.controller.dto.Register;
 import ru.skypro.homework.service.AuthService;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
 @Slf4j
 public class AuthController {
 
