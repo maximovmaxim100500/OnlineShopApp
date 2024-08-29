@@ -15,7 +15,7 @@ import java.util.Objects;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/ads")
 public class CommentController {
 
     private final CommentService commentService;

@@ -40,11 +40,11 @@ public class AdServiceImpl implements AdService {
         this.imageService = imageService;
     }
     @Override
-    public AdDto createAd(CreateOrUpdateAd createAds, String email) {
+    public AdDto createAd(CreateOrUpdateAd createAds, String email, MultipartFile image) {
         Ad ad = adMapper.toAdsFromCreateAds(createAds);
         ad.setUser(userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserWithEmailNotFoundException(email)));
-        ad.setImage("/путь к фоточке " + ad.getId()); // вот эту строку надо будет заменить потом
+        ad.setImage(imageService.uploadImage(image, "/ads")); // вот эту строку надо будет заменить потом
         adRepository.save(ad);
         return adMapper.toDto(ad);
     }

@@ -10,7 +10,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 
 public interface AdService {
-    AdDto createAd(CreateOrUpdateAd createAds, String email);
+    AdDto createAd(CreateOrUpdateAd createAds, String email, MultipartFile image);
     AdsDto getAllAds();
     ExtendedAd getAds(Long id);
     AdsDto getMyAds(String email);

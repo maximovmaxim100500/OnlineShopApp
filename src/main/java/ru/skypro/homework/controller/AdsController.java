@@ -39,8 +39,9 @@ public class AdsController {
     }
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdDto> createAd(@AuthenticationPrincipal UserDetails userDetails,
-                                          @RequestBody CreateOrUpdateAd createAds) {
-        return ResponseEntity.ok(adService.createAd(createAds, userDetails.getUsername()));
+                                          @RequestPart("properties") CreateOrUpdateAd createAds,
+                                          @RequestPart("image") MultipartFile image) {
+        return ResponseEntity.ok(adService.createAd(createAds, userDetails.getUsername(), image));
     }
 
     @GetMapping

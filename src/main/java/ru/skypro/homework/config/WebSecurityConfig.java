@@ -36,8 +36,7 @@ public class WebSecurityConfig {
                                         .mvcMatchers("/ads/**", "/users/**")
                                         .authenticated()
                 )
-                .cors()
-                .and()
+                .cors().disable()
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(withDefaults());
         return http.build();
