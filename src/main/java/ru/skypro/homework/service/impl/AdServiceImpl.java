@@ -71,7 +71,7 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public AdsDto getMyAds(String email) {
+    public AdsDto getAdsMe(String email) {
         log.info("Поиск всех объявлений для пользователя с email: " + email);
         List<Ad> adsList = adRepository.findByUser(userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserWithEmailNotFoundException(email)));

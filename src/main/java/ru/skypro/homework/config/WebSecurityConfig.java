@@ -33,11 +33,13 @@ public class WebSecurityConfig {
                                 authorization
                                         .mvcMatchers(AUTH_WHITELIST)
                                         .permitAll()
+                                        .mvcMatchers(HttpMethod.GET, "/ads")
+                                        .permitAll()
                                         .mvcMatchers("/ads/**", "/users/**")
                                         .authenticated()
                 )
                 .cors().and()
-                /*.sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))*/
+                .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(withDefaults());
         return http.build();
     }

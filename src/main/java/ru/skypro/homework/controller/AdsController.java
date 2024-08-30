@@ -30,11 +30,11 @@ public class AdsController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<AdsDto> getMyAds(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(adService.getMyAds(userDetails.getUsername()));
+    public ResponseEntity<AdsDto> getAdsMe(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(adService.getAdsMe(userDetails.getUsername()));
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ExtendedAd> getAds(@PathVariable Long id) {
+    public ResponseEntity<ExtendedAd> getAd(@PathVariable Long id) {
         return ResponseEntity.ok(adService.getAds(id));
     }
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -55,7 +55,7 @@ public class AdsController {
                                           @RequestBody CreateOrUpdateAd createOrUpdateAdDto,
                                           @PathVariable Long id) {
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
-                || adService.getMyAds(userDetails.getUsername()).getResults().stream().anyMatch(a -> Objects.equals(a.getPk(), id))) {
+                || adService.getAdsMe(userDetails.getUsername()).getResults().stream().anyMatch(a -> Objects.equals(a.getPk(), id))) {
             return ResponseEntity.ok(adService.updateAd(createOrUpdateAdDto, id));
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -65,7 +65,7 @@ public class AdsController {
     public ResponseEntity<HttpStatus> deleteAd(@AuthenticationPrincipal UserDetails userDetails,
                                                @PathVariable Long id) {
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
-                || adService.getMyAds(userDetails.getUsername()).getResults().stream().anyMatch(a -> Objects.equals(a.getPk(), id))) {
+                || adService.getAdsMe(userDetails.getUsername()).getResults().stream().anyMatch(a -> Objects.equals(a.getPk(), id))) {
             adService.removeAd(id);
             return ResponseEntity.ok(HttpStatus.NO_CONTENT);
         }
@@ -77,7 +77,7 @@ public class AdsController {
                                             @PathVariable Long id,
                                             @RequestParam MultipartFile image) {
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
-                || adService.getMyAds(userDetails.getUsername()).getResults().stream().anyMatch(a -> Objects.equals(a.getPk(), id))) {
+                || adService.getAdsMe(userDetails.getUsername()).getResults().stream().anyMatch(a -> Objects.equals(a.getPk(), id))) {
             adService.updateAdsImage(id, image);
             return ResponseEntity.ok(HttpStatus.NO_CONTENT);
         }

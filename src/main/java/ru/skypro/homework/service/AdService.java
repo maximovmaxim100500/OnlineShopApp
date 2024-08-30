@@ -13,7 +13,7 @@ public interface AdService {
     AdDto createAd(CreateOrUpdateAd createAds, String email, MultipartFile image);
     AdsDto getAllAds();
     ExtendedAd getAds(Long id);
-    AdsDto getMyAds(String email);
+    AdsDto getAdsMe(String email);
     AdDto updateAd(CreateOrUpdateAd createOrUpdateAd, Long id);
     @Transactional
     void removeAd(Long id);
