@@ -46,9 +46,9 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUser updateUserDto,
+    public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUser updateUser,
                                               @PathVariable Long id) {
-        return ResponseEntity.ok(userService.updateUserDto(updateUserDto, id));
+        return ResponseEntity.ok(userService.updateUserDto(updateUser, id));
     }
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateUserImage(@RequestParam MultipartFile image,

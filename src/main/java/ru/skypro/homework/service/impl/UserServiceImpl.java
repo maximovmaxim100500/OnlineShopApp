@@ -17,9 +17,7 @@ import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.service.UserService;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean setPassword(NewPassword newPasswordDto, String email) {
         if (newPasswordDto.getCurrentPassword() == null || newPasswordDto.getNewPassword() == null) {
-            log.warn("Current password or new password is null");
+            log.info("Current password or new password is null");
             return false;
         }
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -69,11 +67,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUserDto(UpdateUser updateUserDto, Long id) {
+    public UserDto updateUserDto(UpdateUser updateUser, Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserWithIdNotFoundException("Update user with id:", id));
 
-        userMapper.updateUser(updateUserDto, user);
+        userMapper.updateUser(updateUser, user);
         userRepository.save(user);
         log.info("Обновлен пользователь с id: " + id);
         return userMapper.toDto(user);
