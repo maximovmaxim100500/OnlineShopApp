@@ -14,7 +14,7 @@ public interface UserService {
 
     UserDto updateUser(UpdateUser updateUser, String email);
 
-    UserDto updateUserDto(UpdateUser updateUserDto, Long id);
+    UserDto updateUserDto(UpdateUser updateUser, Long id);
     void updateAvatar(MultipartFile image, String email);
     byte[] getImage(String name) throws IOException;
 }
