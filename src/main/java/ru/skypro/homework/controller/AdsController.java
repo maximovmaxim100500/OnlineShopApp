@@ -50,7 +50,7 @@ public class AdsController {
         return new ResponseEntity<>(adsDto, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<AdDto> updateAd(@AuthenticationPrincipal UserDetails userDetails,
                                           @RequestBody CreateOrUpdateAd createOrUpdateAdDto,
                                           @PathVariable Long id) {

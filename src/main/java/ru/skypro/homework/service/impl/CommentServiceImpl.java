@@ -3,6 +3,7 @@ package ru.skypro.homework.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.controller.dto.CommentDto;
 import ru.skypro.homework.controller.dto.CommentsDto;
 import ru.skypro.homework.controller.dto.CreateOrUpdateComment;
@@ -63,6 +64,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void removeComment(Long adId, Long id) {
         commentRepository.deleteByAdIdAndId(adId, id);
         log.info("Удален комментарий с id: " + id);
@@ -71,7 +73,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto updateComment(Long adId, Long id, CreateOrUpdateComment createOrUpdateCommentDto) {
         log.info("Пытаемся найти комментарий к объявлению с adId: " + adId + " по id: " + id);
-        Comment comment = commentRepository.findCommentByAdIdAndId(id, adId)
+        Comment comment = commentRepository.findCommentByAdIdAndId(adId, id)
                 .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
         comment.setText(createOrUpdateCommentDto.getText());
         commentRepository.save(comment);
