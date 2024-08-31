@@ -83,8 +83,16 @@ public class AdsController {
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
-    @GetMapping(value = "/image/{name}", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] getImages(@PathVariable String name) throws IOException {
-        return adService.getImage(name);
+//    @GetMapping(value = "/image/{name}", produces = MediaType.IMAGE_PNG_VALUE)
+//    public byte[] getImages(@PathVariable String name) throws IOException {
+//        return adService.getImage(name);
+//    }
+    @GetMapping(value = "/image/{name}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    public ResponseEntity<byte[]> getUserPhoto(@PathVariable String name) throws IOException {
+        byte[] image = adService.getImage(name);
+        if (image == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(image);
     }
 }
