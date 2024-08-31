@@ -17,7 +17,6 @@ import ru.skypro.homework.mapper.UserMapper;
 @RequiredArgsConstructor
 public class MyUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository; // Репозиторий для доступа к данным пользователей
-    private final MyUserDetails myUserDetails;   // Класс для хранения деталей пользователя в контексте текущего запроса
     private final UserMapper userMapper;         // Mapper для преобразования User в MyUserDetailsDto
 
     @Override
@@ -26,7 +25,9 @@ public class MyUserDetailsService implements UserDetailsService {
         MyUserDetailsDto myUserDetailsDto = userRepository.findByEmail(email)
                 .map(user -> userMapper.toMyUserDetailsDto(user))
                 .orElseThrow(() -> new UserWithEmailNotFoundException(email)); // Если пользователь не найден, выбрасывается исключение
-        // Устанавливает найденные данные пользователя в myUserDetails
+
+        // Создает новый экземпляр MyUserDetails и устанавливает в него данные пользователя
+        MyUserDetails myUserDetails = new MyUserDetails();
         myUserDetails.setMyUserDetailsDto(myUserDetailsDto);
         return myUserDetails; // Возвращает объект, реализующий UserDetails, используемый Spring Security
     }

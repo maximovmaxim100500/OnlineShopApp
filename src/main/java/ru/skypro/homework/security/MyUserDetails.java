@@ -16,8 +16,6 @@ import java.util.Optional;
  * Реализация интерфейса UserDetails для Spring Security, обеспечивающая детали аутентификации и авторизации пользователя.
  * Класс аннотирован как @RequestScope, что означает создание нового экземпляра для каждого HTTP-запроса.
  */
-@Component
-@RequestScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MyUserDetails implements UserDetails {
 
     private MyUserDetailsDto myUserDetailsDto; // DTO, содержащий данные пользователя

@@ -25,7 +25,7 @@ public class AuthController {
             log.info("Успешная авторизация для пользователя с именем " + loginDto.getUsername());
             return ResponseEntity.ok().body("Successfully"); // Возвращает 200 OK при успешной аутентификации
         } else {
-            log.info("Пользователь с именем " + loginDto.getUsername() + "не найден");
+            log.info("Пользователь с именем " + loginDto.getUsername() + " не найден");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Возвращает 401 Unauthorized при ошибке аутентификации
         }
     }
