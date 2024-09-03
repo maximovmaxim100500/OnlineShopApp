@@ -1,18 +1,26 @@
 package ru.skypro.homework.service;
 
-import ru.skypro.homework.controller.dto.CommentDto;
-import ru.skypro.homework.controller.dto.CommentsDto;
-import ru.skypro.homework.controller.dto.CreateOrUpdateComment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import ru.skypro.homework.controller.dto.CommentDTO;
+import ru.skypro.homework.controller.dto.CreateOrUpdateCommentDTO;
+import ru.skypro.homework.db.entity.Comment;
 
+import java.util.List;
 
 public interface CommentService {
-    CommentsDto getComments(Long id);
 
-    CommentDto createComment(Long id, CreateOrUpdateComment createComment, String email);
+    List<Comment> getAllCommentsByAdId(Integer id);
 
-    void removeComment(Long adId, Long id);
+    Comment addCommentToAdByItsId(Integer id, String username, CreateOrUpdateCommentDTO commentDTO);
 
-    CommentDto updateComment(Long adId, Long id, CreateOrUpdateComment createComment);
-    CommentsDto getCommentsFromUserName(String userName);
-    String getUserNameOfComment(Long id);
+    HttpStatus deleteAdCommentByItsId(Integer adId, Integer commentId, String username);
+
+    ResponseEntity<CommentDTO> updateAdCommentByItsId(
+            Integer adId,
+            Integer commentId,
+            CreateOrUpdateCommentDTO commentDTO,
+            String username
+    );
+
 }

@@ -1,25 +1,3 @@
 databaseChangeLog:
-  - property:
-      name: changeset.id.sequence
-      value: 1
-
-  - changeSet:
-      id: 1
-      author: mmaksimov
-      changes:
-        - sqlFile:
-            path: db.changelog/scripts/createUserTable.sql
-
-  - changeSet:
-      id: 2
-      author: mmaksimov
-      changes:
-        - sqlFile:
-            path: db.changelog/scripts/createAdsTable.sql
-
-  - changeSet:
-      id: 3
-      author: mmaksimov
-      changes:
-        - sqlFile:
-            path: db.changelog/scripts/createCommentsTable.sql
+  - include:
+      file: db.changelog/scripts/create-model-tables.sql

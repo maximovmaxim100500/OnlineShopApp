@@ -2,36 +2,40 @@ package ru.skypro.homework.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
-import ru.skypro.homework.controller.dto.AdDto;
-import ru.skypro.homework.controller.dto.CreateOrUpdateAd;
-import ru.skypro.homework.controller.dto.ExtendedAd;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.Mappings;
+import ru.skypro.homework.controller.dto.AdDTO;
+import ru.skypro.homework.controller.dto.CreateOrUpdateAdDTO;
+import ru.skypro.homework.controller.dto.ExtendedAdDTO;
 import ru.skypro.homework.db.entity.Ad;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        imports = {
+                ru.skypro.homework.db.entity.User.class,
+                ru.skypro.homework.db.entity.Ad.class
+        }
+)
 public interface AdMapper {
-    @Mapping(source = "id", target = "pk")
-    @Mapping(source = "user.id", target = "author")
-    AdDto toDto(Ad ad);
 
-    @Mapping(source = "pk", target = "id")
-    @Mapping(source = "author", target = "user.id")
-    Ad toEntity(AdDto adDto);
+    @Mappings(value = {
+            @Mapping(target = "author", expression = "java(ad.getUser().getId())"),
+            @Mapping(target = "image", expression = """
+                    java("/images/" + ad.getPk())
+                    """)
+    })
+    AdDTO adToAdDTO(Ad ad);
 
-    Ad toAdsFromCreateAds(CreateOrUpdateAd createOrUpdateAdDto);
+    Ad createOrUpdateAdDTOToAd(CreateOrUpdateAdDTO adDTO);
 
-//    @Mapping(source = "pk", target = "id")
-//    @Mapping(source = "author", target = "user.id")
-//    void updateEntityFromDto(AdDto adDto, @MappingTarget Ad ad);
-
-    @Mapping(target = "pk", source = "id")
-    @Mapping(target = "authorFirstName",source = "user.firstName")
-    @Mapping(target = "authorLastName",source = "user.lastName")
-    @Mapping(target = "email",source = "user.email")
-    @Mapping(target = "phone",source = "user.phone")
-    ExtendedAd toExtendedAds(Ad ads);
-
-    void updateAd(CreateOrUpdateAd createOrUpdateAd, @MappingTarget Ad ad);
+    @Mappings(value = {
+            @Mapping(target = "authorFirstName", expression = "java(ad.getUser().getFirstName())"),
+            @Mapping(target = "authorLastName", expression = "java(ad.getUser().getLastName())"),
+            @Mapping(target = "email", expression = "java(ad.getUser().getEmail())"),
+            @Mapping(target = "image", expression = """
+                    java("/images/" + ad.getPk())
+                    """)
+    })
+    ExtendedAdDTO adToExtendedAdDTO(Ad ad);
 
 }
