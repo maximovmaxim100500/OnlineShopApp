@@ -6,14 +6,13 @@ import lombok.Data;
 
 @Data
 @Builder
-@Schema(name = "Ad")
-public class AdDTO {
+@Schema(name = "Comment")
+public class CommentDTO {
 
     private Integer author;
-    private String image;
+    private String authorImage;
+    private String authorFirstName;
+    private Long createdAt;
     private Integer pk;
-    private Integer price;
-    private String title;
-    private String description;
-
+    private String text;
 }

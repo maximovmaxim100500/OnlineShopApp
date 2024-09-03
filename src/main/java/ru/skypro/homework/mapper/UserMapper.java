@@ -2,31 +2,49 @@ package ru.skypro.homework.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
-import ru.skypro.homework.controller.dto.MyUserDetailsDto;
-import ru.skypro.homework.controller.dto.Register;
-import ru.skypro.homework.controller.dto.UpdateUser;
-import ru.skypro.homework.controller.dto.UserDto;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.Mappings;
+import org.springframework.security.core.userdetails.UserDetails;
+import ru.skypro.homework.controller.dto.RegisterDTO;
+import ru.skypro.homework.controller.dto.UpdateUserDTO;
+import ru.skypro.homework.controller.dto.UserDTO;
 import ru.skypro.homework.db.entity.User;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        imports = {ru.skypro.homework.controller.dto.enums.Role.class,
+                ru.skypro.homework.db.entity.UserAvatar.class
+        }
+)
 public interface UserMapper {
 
-    @Mapping(source = "username", target = "email")
-    User toUser(Register register);
+    @Mappings(value = {
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "email", source = "userName"),
+            @Mapping(target = "image", ignore = true)
+    })
+    User registerDTOToUser(RegisterDTO register);
 
-    MyUserDetailsDto toMyUserDetailsDto(User user);
+    @Mappings(value = {
+            @Mapping(target = "id", constant = "0"),
+            @Mapping(target = "email", expression = "java(userDetails.getUsername())"),
+            @Mapping(target = "firstName", constant = "firstName"),
+            @Mapping(target = "lastName", constant = "lastName"),
+            @Mapping(target = "phone", constant = "+7 (111) 111-11-11"),
+            @Mapping(target = "role", expression = "java(Role.USER)"),
+            @Mapping(target = "image", ignore = true)
+    })
+    User userDetailsToUser(UserDetails userDetails);
 
-    UserDto toDto(User user);
+    UserDTO userToUserDTO(User user);
 
-    User toEntity(UserDto userDto);
+    @Mappings(value = {
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "email", ignore = true),
+            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "role", ignore = true),
+            @Mapping(target = "image", ignore = true)
+    })
+    User updateUserDTOToUser(UpdateUserDTO userDTO);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "image", ignore = true)
-    @Mapping(target = "email", ignore = true)
-    @Mapping(source = "role", target = "role")
-    void updateEntityFromDto(UserDto userDto, @MappingTarget User user);
-
-    void updateUser(UpdateUser updateUser, @MappingTarget User user);
 }

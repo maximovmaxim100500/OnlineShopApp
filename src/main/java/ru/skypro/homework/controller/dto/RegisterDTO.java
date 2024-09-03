@@ -1,22 +1,20 @@
 package ru.skypro.homework.controller.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import ru.skypro.homework.controller.dto.enums.Role;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Register {
-    private Long id;
+@Schema(name = "Register")
+public class RegisterDTO {
+
+    @JsonProperty("username")
     @Size(min = 4, max = 32)
-    private String username;
+    private String userName;
     @Size(min = 8, max = 16)
     private String password;
     @Size(min = 2, max = 16)

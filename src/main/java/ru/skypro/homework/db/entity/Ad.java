@@ -1,40 +1,41 @@
 package ru.skypro.homework.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Table(name = "ads")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 public class Ad {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private String title; // нужна для CreateOrUpdateAd
-
-    @Column(nullable = false)
-    private Integer price; // нужна для CreateOrUpdateAd
-
-    @Column(nullable = false)
-    private String description; // нужна для CreateOrUpdateAd
-
-    @Column(name = "image_url")
-    private String image;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    private Integer pk;
+    private Integer price;
+    private String title;
+    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ad ad = (Ad) o;
+        return Objects.equals(price, ad.price)
+                && Objects.equals(title, ad.title)
+                && Objects.equals(description, ad.description)
+                && Objects.equals(user, ad.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(price, title, description, user);
+    }
 }

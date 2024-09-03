@@ -1,42 +1,87 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.controller.dto.Login;
-import ru.skypro.homework.controller.dto.Register;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import ru.skypro.homework.controller.dto.LoginDTO;
+import ru.skypro.homework.controller.dto.RegisterDTO;
 import ru.skypro.homework.service.AuthService;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@Slf4j
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(tags = "Authorization",
+            operationId = "login",
+            summary = "User Authorization",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "User login info",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(schema = @Schema(hidden = true))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema(hidden = true))
+                    )
+            }
+    )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Login loginDto) {
-        log.info("Авторизация для пользователя с именем " + loginDto.getUsername());
-        boolean isAuthenticated = authService.authenticate(loginDto.getUsername(), loginDto.getPassword());
-        if (isAuthenticated) {
-            log.info("Успешная авторизация для пользователя с именем " + loginDto.getUsername());
-            return ResponseEntity.ok().body("Successfully"); // Возвращает 200 OK при успешной аутентификации
+    public ResponseEntity<?> login(@RequestBody LoginDTO login) {
+        if (authService.login(login.getUserName(), login.getPassword())) {
+            return ResponseEntity.ok().build();
         } else {
-            log.info("Пользователь с именем " + loginDto.getUsername() + " не найден");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Возвращает 401 Unauthorized при ошибке аутентификации
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
+    @Operation(
+            tags = "Registration",
+            operationId = "register",
+            summary = "User registration",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "New user info",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Created",
+                            content = @Content(schema = @Schema(hidden = true))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(schema = @Schema(hidden = true))
+                    )
+            }
+    )
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Register registerDto) {
-        boolean isRegistered = authService.register(registerDto);
-        if (isRegistered) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully"); // Возвращает 201 Created при успешной регистрации
+    public ResponseEntity<?> register(@RequestBody RegisterDTO register) {
+        if (authService.register(register)) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // Возвращает 400 Bad Request при ошибке регистрации
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
 }

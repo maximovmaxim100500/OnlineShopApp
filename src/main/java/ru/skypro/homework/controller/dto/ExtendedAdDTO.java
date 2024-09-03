@@ -1,16 +1,15 @@
 package ru.skypro.homework.controller.dto;
 
-import lombok.AllArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class ExtendedAd {
-    private Long pk; // id объявления
+@Schema(name = "ExtendedAd")
+public class ExtendedAdDTO {
+
+    private Integer pk;
     private String authorFirstName;
     private String authorLastName;
     private String description;
