@@ -21,6 +21,14 @@ import ru.skypro.homework.service.UserService;
 
 import java.io.IOException;
 
+/**
+ * Контроллер для управления информацией о пользователях.
+ * <p>
+ * Этот контроллер предоставляет методы для обновления пароля пользователя, получения информации о текущем авторизованном пользователе,
+ * обновления информации о пользователе и изменения аватара пользователя.
+ * Все методы используют аутентификацию и авторизацию, и возвращают соответствующие HTTP статусы.
+ * </p>
+ */
 @Slf4j
 @CrossOrigin(origins = "http://localhost:3000")
 @AllArgsConstructor
@@ -32,6 +40,17 @@ public class UsersController {
     private final UserService userService;
     private final UserAvatarService userAvatarService;
 
+    /**
+     * Обновление пароля пользователя.
+     * Этот метод позволяет пользователю обновить свой пароль.
+     *
+     * @param newPassword информация о текущем и новом пароле пользователя
+     * @param authentication аутентифицированный пользователь
+     * @return ResponseEntity:
+     *         - 200 (OK), если пароль успешно изменен
+     *         - 401 (Unauthorized), если учетные данные неверны
+     *         - 403 (Forbidden), если пользователь не имеет прав на изменение пароля
+     */
     @Operation(
             tags = "Users",
             operationId = "setPassword",
@@ -69,6 +88,14 @@ public class UsersController {
         );
     }
 
+    /**
+     * Получение информации о текущем авторизованном пользователе.
+     * Этот метод возвращает данные о пользователе, который вошел в систему.
+     *
+     * @param authentication аутентифицированный пользователь
+     * @return ResponseEntity с объектом UserDTO и статусом 200 (OK)
+     *         - 401 (Unauthorized), если пользователь не авторизован
+     */
     @Operation(
             tags = "Users",
             operationId = "getUser",
@@ -96,6 +123,15 @@ public class UsersController {
         return ResponseEntity.ok(userMapper.userToUserDTO(user));
     }
 
+    /**
+     * Обновление информации о текущем авторизованном пользователе.
+     * Этот метод позволяет пользователю обновить свои личные данные.
+     *
+     * @param updateUser информация о новых данных пользователя
+     * @param authentication аутентифицированный пользователь
+     * @return ResponseEntity с статусом 200 (OK), если информация успешно обновлена
+     *         - 401 (Unauthorized), если пользователь не авторизован
+     */
     @Operation(
             tags = "Users",
             operationId = "updateUser",
@@ -133,6 +169,15 @@ public class UsersController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Обновление аватара текущего авторизованного пользователя.
+     * Этот метод позволяет пользователю изменить свой аватар.
+     *
+     * @param image новый аватар пользователя в виде файла
+     * @param authentication аутентифицированный пользователь
+     * @return ResponseEntity с статусом 200 (OK), если аватар успешно обновлен
+     *         - 401 (Unauthorized), если пользователь не авторизован
+     */
     @Operation(
             tags = "Users",
             operationId = "updateUserImage",

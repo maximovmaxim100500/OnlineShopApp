@@ -17,15 +17,15 @@ public class AdImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String path;
+    private Integer id;                     // Уникальный идентификатор изображения
+    private String path;                    // Путь к изображению
     @Column(name = "file_size")
-    private long fileSize;
+    private long fileSize;                  // Размер файла изображения в байтах
     @Column(name = "media_type")
-    private String mediaType;
+    private String mediaType;               // Медиа тип изображения (например, "image/jpeg")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ad_id")
-    private Ad ad;
+    private Ad ad;                          // Объявление, к которому относится это изображение
 
     @Override
     public boolean equals(Object o) {

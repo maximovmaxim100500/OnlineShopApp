@@ -17,6 +17,14 @@ import ru.skypro.homework.controller.dto.LoginDTO;
 import ru.skypro.homework.controller.dto.RegisterDTO;
 import ru.skypro.homework.service.AuthService;
 
+/**
+ * Контроллер для авторизации и регистрации пользователей.
+ * <p>
+ * Этот контроллер управляет процессом авторизации и регистрации пользователей в системе.
+ * Он предоставляет методы для входа в систему и создания новых учетных записей.
+ * Все методы используют JSON для обмена данными с клиентом и возвращают соответствующие HTTP статусы.
+ * </p>
+ */
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
@@ -25,6 +33,15 @@ public class AuthController {
 
     private final AuthService authService;
 
+    /**
+     * Авторизация пользователя.
+     * Этот метод позволяет пользователю войти в систему, предоставив имя пользователя и пароль.
+     *
+     * @param login информация для входа в систему
+     * @return ResponseEntity:
+     *         - 200 (OK), если аутентификация прошла успешно
+     *         - 401 (Unauthorized), если учетные данные неверны
+     */
     @Operation(tags = "Authorization",
             operationId = "login",
             summary = "User Authorization",
@@ -54,6 +71,15 @@ public class AuthController {
         }
     }
 
+    /**
+     * Регистрация нового пользователя.
+     * Этот метод позволяет зарегистрировать нового пользователя, предоставив его данные.
+     *
+     * @param register информация о новом пользователе
+     * @return ResponseEntity:
+     *         - 201 (Created), если регистрация прошла успешно
+     *         - 400 (Bad Request), если данные неверны или отсутствуют
+     */
     @Operation(
             tags = "Registration",
             operationId = "register",

@@ -18,6 +18,9 @@ import ru.skypro.homework.service.UserService;
 
 import java.io.IOException;
 
+/**
+ * Реализация сервиса для работы с аватарами пользователей.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserAvatarServiceImpl implements UserAvatarService {
@@ -26,6 +29,13 @@ public class UserAvatarServiceImpl implements UserAvatarService {
     final private UserService userService;
     private final UserRepository userRepository;
 
+    /**
+     * Получает аватар пользователя по его идентификатору.
+     *
+     * @param id идентификатор аватара пользователя
+     * @return {@link ResponseEntity} содержащий байты аватара и заголовки HTTP
+     * @throws AdsAvatarNotFoundException если аватар не найден
+     */
     @Override
     public ResponseEntity<byte[]> getUserAvatar(Integer id) {
         UserAvatar avatar = userAvatarRepository.findById(id)
@@ -38,6 +48,13 @@ public class UserAvatarServiceImpl implements UserAvatarService {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
 
+    /**
+     * Сохраняет или обновляет аватар пользователя.
+     *
+     * @param username имя пользователя
+     * @param image    файл изображения аватара
+     * @throws IOException если произошла ошибка при чтении данных из файла
+     */
     @Override
     @Transactional
     public void saveUserAvatar(String username, MultipartFile image) throws IOException {
@@ -52,6 +69,7 @@ public class UserAvatarServiceImpl implements UserAvatarService {
 
         userAvatarRepository.save(avatar);
 
+        // Обновляем URL аватара пользователя, если ранее он был пустым
         if (user.getImage() == null || user.getImage().isBlank()) {
             user.setImage("/avatars/" + avatar.getId());
             userRepository.save(user);

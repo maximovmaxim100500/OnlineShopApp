@@ -16,12 +16,12 @@ public class Ad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pk;
-    private Integer price;
-    private String title;
-    private String description;
+    private Integer pk;                 // Уникальный идентификатор объявления
+    private Integer price;              // Цена объявления
+    private String title;               // Заголовок объявления
+    private String description;         // Описание объявления
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private User user;                  // Пользователь, который создал это объявление
 
     @Override
     public boolean equals(Object o) {

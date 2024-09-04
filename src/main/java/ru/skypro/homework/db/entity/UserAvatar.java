@@ -17,16 +17,16 @@ public class UserAvatar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id;             // Уникальный идентификатор аватара
     @Column(name = "file_size")
-    private long fileSize;
+    private long fileSize;          // Размер файла аватара в байтах
     @Column(name = "media_type")
-    private String mediaType;
+    private String mediaType;       // Тип медиа-файла (например, image/png)
     @Lob
     @ToString.Exclude
-    private byte[] data;
+    private byte[] data;            // Данные аватара в виде массива байтов
     @OneToOne
-    private User user;
+    private User user;              // Связь с пользователем, которому принадлежит этот аватар
 
     @Override
     public boolean equals(Object o) {

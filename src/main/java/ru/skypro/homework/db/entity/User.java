@@ -19,16 +19,16 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id;             // Уникальный идентификатор пользователя,
     @Column(unique = true)
-    private String email;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String phone;
+    private String email;           // Электронная почта пользователя (уникальное поле)
+    private String password;        // Пароль пользователя
+    private String firstName;       // Имя пользователя
+    private String lastName;        // Фамилия пользователя
+    private String phone;           // Телефон пользователя
     @Enumerated(EnumType.STRING)
-    private Role role;
-    private String image;
+    private Role role;              // Роль пользователя (например, ADMIN, USER)
+    private String image;           // Путь к изображению профиля пользователя
 
     @Override
     public boolean equals(Object o) {
