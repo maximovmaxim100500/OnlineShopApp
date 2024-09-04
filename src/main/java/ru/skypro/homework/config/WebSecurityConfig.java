@@ -14,6 +14,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * Конфигурационный класс WebSecurityConfig отвечает за настройку безопасности в приложении.
+ * Включает в себя настройку аутентификации, авторизации и защиты ресурсов.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
@@ -30,6 +34,14 @@ public class WebSecurityConfig {
             "/register"
     };
 
+    /**
+     * Настраивает цепочку фильтров безопасности. Отключает защиту CSRF, разрешает доступ к определённым
+     * маршрутам без аутентификации, и включает базовую HTTP-аутентификацию.
+     *
+     * @param http объект HttpSecurity для конфигурации безопасности HTTP
+     * @return настроенный объект SecurityFilterChain
+     * @throws Exception если возникнет ошибка конфигурации
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf()
@@ -47,16 +59,27 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    /**
+     * Создаёт и настраивает бин PasswordEncoder для шифрования паролей с использованием BCrypt.
+     *
+     * @return экземпляр BCryptPasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Настраивает провайдер аутентификации с использованием DAO (Data Access Object) для загрузки
+     * пользовательских данных и проверки паролей.
+     *
+     * @return настроенный DaoAuthenticationProvider
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder()); // Устанавливает шифратор паролей
+        provider.setUserDetailsService(userDetailsService); // Устанавливает сервис загрузки пользовательских данных
 
         return provider;
     }

@@ -18,13 +18,24 @@ import java.nio.file.Path;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
+/**
+ * Реализация сервиса для работы с изображениями объявлений.
+ */
 @Service
 @RequiredArgsConstructor
 public class AdImageServiceImpl implements AdImageService {
     private final AdImageRepository adImageRepository;
-    @Value("${path.to.adimage.folder}")
+    @Value("${path.to.adimage.folder}") // Путь к папке для хранения изображений
     private String imagesFolder;
 
+    /**
+     * Создает и сохраняет изображение объявления.
+     *
+     * @param ad объявление, к которому привязано изображение
+     * @param image изображение в формате MultipartFile
+     * @return сохраненный объект AdImage
+     * @throws IOException если произошла ошибка при работе с файловой системой
+     */
     @Override
     public AdImage createAdImage(Ad ad, MultipartFile image) throws IOException {
         final Path filePath = Path.of(
@@ -32,9 +43,10 @@ public class AdImageServiceImpl implements AdImageService {
                 ad.getPk() + "." + getExtension(image.getOriginalFilename())
         );
 
-        Files.createDirectories(filePath.getParent());
-        Files.deleteIfExists(filePath);
+        Files.createDirectories(filePath.getParent()); // Создание директорий, если они не существуют
+        Files.deleteIfExists(filePath); // Удаление старого файла, если он существует
 
+        // Запись нового изображения в файл
         try (
                 InputStream is = image.getInputStream();
                 OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
@@ -44,6 +56,7 @@ public class AdImageServiceImpl implements AdImageService {
             bis.transferTo(bos);
         }
 
+        // Создание или обновление записи изображения в базе данных
         final AdImage adImage = adImageRepository.findById(ad.getPk())
                 .orElseGet(AdImage::new);
         adImage.setPath(filePath.toString());
@@ -54,11 +67,24 @@ public class AdImageServiceImpl implements AdImageService {
         return adImageRepository.save(adImage);
     }
 
+    /**
+     * Сохраняет объект AdImage в базе данных.
+     *
+     * @param image объект AdImage для сохранения
+     * @return сохраненный объект AdImage
+     */
     @Override
     public AdImage saveAdImage(AdImage image) {
         return adImageRepository.save(image);
     }
 
+    /**
+     * Получает изображение объявления и отправляет его в ответе.
+     *
+     * @param id идентификатор объявления
+     * @param response объект HttpServletResponse для отправки изображения
+     * @throws IOException если произошла ошибка при работе с файловой системой
+     */
     @Override
     public void getAdImage(Integer id, HttpServletResponse response) throws IOException {
         Ad ad = Ad.builder()
@@ -68,6 +94,7 @@ public class AdImageServiceImpl implements AdImageService {
                 .orElseThrow(() -> new AdsImageFileNotFoundException("Image of ad with id " + id + " not found"));
         Path path = Path.of(adImage.getPath());
 
+        // Отправка изображения в ответе
         try (InputStream is = Files.newInputStream(path);
              OutputStream os = response.getOutputStream()) {
             response.setStatus(HttpStatus.OK.value());
@@ -77,6 +104,12 @@ public class AdImageServiceImpl implements AdImageService {
         }
     }
 
+    /**
+     * Получает расширение файла из имени файла.
+     *
+     * @param fileName имя файла
+     * @return расширение файла
+     */
     private String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }

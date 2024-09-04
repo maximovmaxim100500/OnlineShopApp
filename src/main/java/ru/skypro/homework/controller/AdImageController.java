@@ -15,6 +15,10 @@ import ru.skypro.homework.service.AdImageService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Контроллер AdImageController предоставляет API для работы с изображениями объявлений.
+ * Реализует метод для получения изображения объявления по его идентификатору.
+ */
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +28,14 @@ public class AdImageController {
 
     private final AdImageService adImageService;
 
+    /**
+     * Метод для получения изображения объявления по его идентификатору.
+     * Изображение возвращается в виде байтового потока через HttpServletResponse.
+     *
+     * @param id       идентификатор объявления, изображение которого нужно получить
+     * @param response HttpServletResponse, в который записывается изображение
+     * @throws IOException если возникнет ошибка при записи изображения в поток
+     */
     @Operation(
             tags = "Images",
             operationId = "getAdImage",

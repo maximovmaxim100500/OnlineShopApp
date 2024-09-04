@@ -13,6 +13,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.service.UserAvatarService;
 
+/**
+ * Контроллер для работы с аватарами пользователей.
+ * <p>
+ * Этот контроллер предоставляет функционал для получения аватара пользователя по его идентификатору.
+ * Все методы контроллера требуют авторизации. Аватар возвращается в виде байтового массива.
+ * </p>
+ */
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @RestController
@@ -21,6 +28,16 @@ public class UserAvatarController {
 
     private final UserAvatarService userAvatarService;
 
+    /**
+     * Получение аватара пользователя.
+     * Этот метод позволяет получить аватар пользователя по его идентификатору.
+     *
+     * @param id идентификатор аватара пользователя
+     * @return ResponseEntity:
+     *         - 200 (OK), если аватар успешно найден и возвращен
+     *         - 401 (Unauthorized), если запрос не авторизован
+     *         - 404 (Not Found), если аватар не найден
+     */
     @Operation(
             tags = "UserAvatar",
             operationId = "getUserAvatar",

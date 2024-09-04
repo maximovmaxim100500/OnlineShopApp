@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Реализация сервиса для работы с объявлениями.
+ */
 @Service
 @RequiredArgsConstructor
 public class AdsServiceImpl implements AdsService {
@@ -37,6 +40,15 @@ public class AdsServiceImpl implements AdsService {
     private final UserService userService;
     private final AdImageService adImageService;
 
+    /**
+     * Добавляет новое объявление и сохраняет прикрепленное изображение.
+     *
+     * @param ad информация о новом объявлении
+     * @param username имя пользователя, создающего объявление
+     * @param image изображение объявления
+     * @return ResponseEntity с созданным объявлением и статусом CREATED
+     * @throws IOException если произошла ошибка при работе с файловой системой
+     */
     @Override
     @Transactional
     public ResponseEntity<AdDTO> addAd(CreateOrUpdateAdDTO ad, String username, MultipartFile image) throws IOException {
@@ -52,17 +64,34 @@ public class AdsServiceImpl implements AdsService {
         return ResponseEntity.status(HttpStatus.CREATED).body(adMapper.adToAdDTO(createdAd));
     }
 
+    /**
+     * Получает список всех объявлений.
+     *
+     * @return список всех объявлений
+     */
     @Override
     public List<Ad> getAllAds() {
         return adRepository.findAll();
     }
 
+    /**
+     * Получает объявления пользователя по его имени.
+     *
+     * @param username имя пользователя
+     * @return список объявлений пользователя
+     */
     @Override
     public List<Ad> getUsersAds(String username) {
         User user = userService.findUserByEmail(username);
         return adRepository.findAllByUser(user);
     }
 
+    /**
+     * Получает расширенную информацию о объявлении по его идентификатору.
+     *
+     * @param id идентификатор объявления
+     * @return ResponseEntity с расширенной информацией об объявлении и статусом OK или статусом NOT_FOUND, если объявление не найдено
+     */
     @Override
     public ResponseEntity<ExtendedAdDTO> getExtendedAdInfo(Integer id) {
         Optional<Ad> ad = adRepository.findById(id);
@@ -76,6 +105,13 @@ public class AdsServiceImpl implements AdsService {
         return ResponseEntity.ok(extendedAd);
     }
 
+    /**
+     * Получает объявление по его идентификатору.
+     *
+     * @param id идентификатор объявления
+     * @return объект объявления
+     * @throws AdsAdNotFoundException если объявление не найдено
+     */
     @Override
     public Ad getAdById(Integer id) {
         Ad ad = adRepository.findById(id)
@@ -84,6 +120,13 @@ public class AdsServiceImpl implements AdsService {
         return ad;
     }
 
+    /**
+     * Удаляет объявление по его идентификатору, если пользователь имеет соответствующие права.
+     *
+     * @param id идентификатор объявления
+     * @param authentication аутентифицированный пользователь
+     * @return статус операции удаления
+     */
     @Override
     @Transactional
     public HttpStatus deleteAdById(Integer id, Authentication authentication) {
@@ -108,6 +151,14 @@ public class AdsServiceImpl implements AdsService {
         }
     }
 
+    /**
+     * Обновляет объявление по его идентификатору, если пользователь имеет соответствующие права.
+     *
+     * @param id идентификатор объявления
+     * @param ad обновленная информация об объявлении
+     * @param username имя пользователя, обновляющего объявление
+     * @return ResponseEntity с обновленным объявлением и статусом OK или статусом FORBIDDEN, если у пользователя нет прав
+     */
     @Override
     public ResponseEntity<AdDTO> updateAdById(Integer id, CreateOrUpdateAdDTO ad, String username) {
         Ad foundedAd = getAdById(id);
@@ -132,6 +183,15 @@ public class AdsServiceImpl implements AdsService {
         }
     }
 
+    /**
+     * Обновляет изображение объявления по его идентификатору, если пользователь имеет соответствующие права.
+     *
+     * @param id идентификатор объявления
+     * @param image новое изображение объявления
+     * @param username имя пользователя, обновляющего изображение
+     * @return ResponseEntity с новым изображением и статусом OK или статусом FORBIDDEN, если у пользователя нет прав
+     * @throws IOException если произошла ошибка при работе с файловой системой
+     */
     @Override
     public ResponseEntity<byte[]> updateAdImageById(Integer id, MultipartFile image, String username) throws IOException {
         Ad foundedAd = getAdById(id);

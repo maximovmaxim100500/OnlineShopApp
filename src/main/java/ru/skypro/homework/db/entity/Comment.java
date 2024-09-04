@@ -17,15 +17,15 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pk;
+    private Integer pk;                     // Уникальный идентификатор комментария
     @Column(name = "created_at")
-    private Date createdAt;
-    private String text;
+    private Date createdAt;                 // Дата и время создания комментария
+    private String text;                    // Текст комментария
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private User user;                      // Пользователь, оставивший комментарий
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_id")
-    private Ad ad;
+    private Ad ad;                          // Объявление, к которому относится этот комментарий
 
     @Override
     public boolean equals(Object o) {

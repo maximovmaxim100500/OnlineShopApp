@@ -20,6 +20,9 @@ import ru.skypro.homework.service.UserService;
 
 import java.util.List;
 
+/**
+ * Реализация сервиса для работы с комментариями.
+ */
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -29,6 +32,12 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
     private final CommentMapper commentMapper;
 
+    /**
+     * Получает все комментарии для объявления по его идентификатору.
+     *
+     * @param id идентификатор объявления
+     * @return список комментариев для указанного объявления
+     */
     @Override
     public List<Comment> getAllCommentsByAdId(Integer id) {
         Ad ad = adsService.getAdById(id);
@@ -36,6 +45,14 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findAllByAd(ad);
     }
 
+    /**
+     * Добавляет комментарий к объявлению по его идентификатору.
+     *
+     * @param id идентификатор объявления
+     * @param username имя пользователя, добавляющего комментарий
+     * @param commentDTO данные комментария
+     * @return добавленный комментарий
+     */
     @Override
     public Comment addCommentToAdByItsId(Integer id, String username, CreateOrUpdateCommentDTO commentDTO) {
         Ad ad = adsService.getAdById(id);
@@ -48,6 +65,14 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(newComment);
     }
 
+    /**
+     * Удаляет комментарий по его идентификатору.
+     *
+     * @param adId идентификатор объявления
+     * @param commentId идентификатор комментария
+     * @param username имя пользователя, запрашивающего удаление
+     * @return статус удаления
+     */
     @Override
     @Transactional
     public HttpStatus deleteAdCommentByItsId(Integer adId, Integer commentId, String username) {
@@ -71,6 +96,16 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+
+    /**
+     * Обновляет комментарий по его идентификатору.
+     *
+     * @param adId идентификатор объявления
+     * @param commentId идентификатор комментария
+     * @param commentDTO данные для обновления комментария
+     * @param username имя пользователя, запрашивающего обновление
+     * @return обновленный комментарий в формате {@link ResponseEntity}
+     */
     @Override
     public ResponseEntity<CommentDTO> updateAdCommentByItsId(
             Integer adId,
@@ -105,6 +140,13 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    /**
+     * Находит комментарий по его идентификатору.
+     *
+     * @param id идентификатор комментария
+     * @return найденный комментарий
+     * @throws AdsCommentNotFoundException если комментарий не найден
+     */
     private Comment findCommentById(Integer id) {
         return commentRepository.findByPk(id)
                 .orElseThrow(() -> new AdsCommentNotFoundException("Comment with id " + id + " not found."));
