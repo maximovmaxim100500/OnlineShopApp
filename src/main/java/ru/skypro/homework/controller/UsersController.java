@@ -129,7 +129,7 @@ public class UsersController {
      *
      * @param updateUser информация о новых данных пользователя
      * @param authentication аутентифицированный пользователь
-     * @return ResponseEntity с статусом 200 (OK), если информация успешно обновлена
+     * @return ResponseEntity со статусом 200 (OK), если информация успешно обновлена
      *         - 401 (Unauthorized), если пользователь не авторизован
      */
     @Operation(
@@ -175,7 +175,7 @@ public class UsersController {
      *
      * @param image новый аватар пользователя в виде файла
      * @param authentication аутентифицированный пользователь
-     * @return ResponseEntity с статусом 200 (OK), если аватар успешно обновлен
+     * @return ResponseEntity со статусом 200 (OK), если аватар успешно обновлен
      *         - 401 (Unauthorized), если пользователь не авторизован
      */
     @Operation(

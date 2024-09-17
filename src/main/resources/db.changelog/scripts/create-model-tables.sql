@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset Denis Siliukov:1
+-- changeset Maxim Maximov:1
 CREATE TABLE users
 (
     id serial NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE users
     CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
--- changeset Denis Siliukov:2
+-- changeset Maxim Maximov:2
 CREATE TABLE avatars
 (
     id serial NOT NULL,
@@ -29,12 +29,12 @@ CREATE TABLE avatars
         REFERENCES avatars (id)
 );
 
--- changeset Denis Siliukov:3
+-- changeset Maxim Maximov:3
 CREATE INDEX email_idx
     ON users (email)
 ;
 
--- changeset Denis SIliukov:4
+-- changeset Maxim Maximov:4
 CREATE TABLE images
 (
     id serial NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE images
     CONSTRAINT ad_id_unique UNIQUE (ad_id)
 );
 
--- changeset Denis Siliukov:5
+-- changeset Maxim Maximov:5
 CREATE TABLE ads
 (
     pk serial NOT NULL,
@@ -62,19 +62,19 @@ CREATE TABLE ads
         ON DELETE CASCADE
 );
 
--- changeset Denis Siliukov:6
+-- changeset Maxim Maximov:6
 ALTER TABLE images
     ADD CONSTRAINT ad_pk_fkey FOREIGN KEY (ad_id)
         REFERENCES ads (pk)
         ON DELETE CASCADE
 ;
 
--- changeset Denis Siliukov:7
+-- changeset Maxim Maximov:7
 CREATE INDEX ad_id_idx
     ON images (ad_id)
 ;
 
--- changeset Denis Siliukov:8
+-- changeset Maxim Maximov:8
 CREATE TABLE comments
 (
     pk serial NOT NULL,
