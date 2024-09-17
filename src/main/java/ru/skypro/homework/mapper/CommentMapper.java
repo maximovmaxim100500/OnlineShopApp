@@ -2,45 +2,27 @@ package ru.skypro.homework.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
-import ru.skypro.homework.controller.dto.CommentDto;
-import ru.skypro.homework.controller.dto.CreateOrUpdateComment;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.Mappings;
+import ru.skypro.homework.controller.dto.CommentDTO;
+import ru.skypro.homework.controller.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.db.entity.Comment;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        imports = {java.util.Date.class, ru.skypro.homework.db.entity.User.class}
+)
 public interface CommentMapper {
 
-    @Mapping(source = "id", target = "pk")
-    @Mapping(source = "user.id", target = "author")
-    @Mapping(source = "user.image", target = "authorImage")
-    @Mapping(source = "user.firstName", target = "authorFirstName")
-    @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "localDateTimeToInteger")
-    CommentDto toDto(Comment comment);
+    @Mappings(value = {
+            @Mapping(target = "author", expression = "java(comment.getUser().getId())"),
+            @Mapping(target = "authorImage", expression = "java(comment.getUser().getImage())"),
+            @Mapping(target = "authorFirstName", expression = "java(comment.getUser().getFirstName())"),
+            @Mapping(target = "createdAt", expression = "java(comment.getCreatedAt().getTime())")
+    })
+    CommentDTO commentToCommentDTO(Comment comment);
 
-    @Mapping(source = "pk", target = "id")
-    @Mapping(source = "author", target = "user.id")
-    @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "integerToLocalDateTime")
-    Comment toEntity(CommentDto commentDto);
+    @Mappings(value = @Mapping(target = "createdAt", expression = "java(new Date())"))
+    Comment createOrUpdateCommentDTOToComment(CreateOrUpdateCommentDTO commentDTO);
 
-    @Mapping(source = "pk", target = "id")
-    @Mapping(source = "author", target = "user.id")
-    @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "integerToLocalDateTime")
-    void updateEntityFromDto(CommentDto commentDto, @MappingTarget Comment comment);
-
-    Comment toCommentFromCreateComment(CreateOrUpdateComment createComment);
-
-    @Named("localDateTimeToInteger")
-    static Integer localDateTimeToInteger(LocalDateTime localDateTime) {
-        return localDateTime == null ? null : (int) localDateTime.toEpochSecond(ZoneOffset.UTC);
-    }
-
-    @Named("integerToLocalDateTime")
-    static LocalDateTime integerToLocalDateTime(Integer timestamp) {
-        return timestamp == null ? null : LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC);
-    }
 }

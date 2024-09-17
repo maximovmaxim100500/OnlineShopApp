@@ -1,50 +1,77 @@
 package ru.skypro.homework.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.controller.dto.Register;
-import ru.skypro.homework.db.entity.User;
-import ru.skypro.homework.db.repository.UserRepository;
-import ru.skypro.homework.mapper.UserMapper;
+import org.springframework.transaction.annotation.Transactional;
+import ru.skypro.homework.controller.dto.RegisterDTO;
 import ru.skypro.homework.service.AuthService;
+import ru.skypro.homework.service.UserService;
 
-import java.util.Optional;
-
-import static ru.skypro.homework.controller.dto.enums.Role.USER;
-
-@Slf4j
+/**
+ * Реализация сервиса для аутентификации и регистрации пользователей.
+ */
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
+    private final UserDetailsManager manager;
+    private final PasswordEncoder encoder;
+    private final UserService userService;
 
+    /**
+     * Выполняет аутентификацию пользователя.
+     *
+     * @param userName имя пользователя
+     * @param password пароль пользователя
+     * @return true, если имя пользователя существует и пароль совпадает, иначе false
+     */
     @Override
-    public boolean authenticate(String username, String password) {
-        Optional<User> optionalUser = userRepository.findByEmail(username);
-        if (optionalUser.isEmpty()) {
-            log.debug("User not found");
+    public boolean login(String userName, String password) {
+        // Проверяем, существует ли пользователь
+        if (!manager.userExists(userName)) {
             return false;
         }
-        return passwordEncoder.matches(password, optionalUser.get().getPassword());
+        // Загружаем детали пользователя и проверяем пароль
+        UserDetails userDetails = manager.loadUserByUsername(userName);
+        return encoder.matches(password, userDetails.getPassword());
     }
 
+    /**
+     * Регистрирует нового пользователя.
+     *
+     * @param register данные для регистрации пользователя
+     * @return true, если регистрация успешна, иначе false
+     */
     @Override
-    public boolean register(Register register) {
-        if (userRepository.findByEmail(register.getUsername().toLowerCase()).isPresent()) {
+    @Transactional
+    public boolean register(RegisterDTO register) {
+        // Проверяем, существует ли уже пользователь с таким именем
+        if (manager.userExists(register.getUserName())) {
             return false;
         }
-        User user = userMapper.toUser(register);
-        user.setEmail(user.getEmail().toLowerCase());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(register.getRole() == null ? USER : register.getRole());
-        userRepository.save(user);
-        log.debug("Registered a new user");
+        // Создаем пользователя и сохраняем его в системе
+        manager.createUser(
+                User.builder()
+                        .passwordEncoder(this.encoder::encode)
+                        .password(register.getPassword())
+                        .username(register.getUserName())
+                        .roles(register.getRole().name())
+                        .build());
+
+        // Получаем созданного пользователя и обновляем дополнительные данные
+        ru.skypro.homework.db.entity.User createdUser = userService.findUserByEmail(register.getUserName());
+
+        createdUser.setFirstName(register.getFirstName());
+        createdUser.setLastName(register.getLastName());
+        createdUser.setPhone(register.getPhone());
+
+        userService.saveUser(createdUser);
+
         return true;
     }
+
 }

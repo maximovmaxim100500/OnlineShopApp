@@ -1,105 +1,155 @@
 package ru.skypro.homework.service.impl;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.skypro.homework.controller.dto.CommentDto;
-import ru.skypro.homework.controller.dto.CommentsDto;
-import ru.skypro.homework.controller.dto.CreateOrUpdateComment;
+import ru.skypro.homework.controller.dto.CommentDTO;
+import ru.skypro.homework.controller.dto.CreateOrUpdateCommentDTO;
+import ru.skypro.homework.controller.dto.enums.Role;
+import ru.skypro.homework.exception.AdsCommentNotFoundException;
 import ru.skypro.homework.db.entity.Ad;
 import ru.skypro.homework.db.entity.Comment;
-import ru.skypro.homework.db.repository.AdRepository;
+import ru.skypro.homework.db.entity.User;
 import ru.skypro.homework.db.repository.CommentRepository;
-import ru.skypro.homework.db.repository.UserRepository;
-import ru.skypro.homework.exception.AdsNotFoundException;
-import ru.skypro.homework.exception.CommentNotFoundException;
-import ru.skypro.homework.exception.UserWithEmailNotFoundException;
 import ru.skypro.homework.mapper.CommentMapper;
+import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.CommentService;
+import ru.skypro.homework.service.UserService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Реализация сервиса для работы с комментариями.
+ */
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final AdRepository adRepository;
+    private final AdsService adsService;
+    private final UserService userService;
     private final CommentMapper commentMapper;
 
-    @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, UserRepository userRepository, AdRepository adRepository, CommentMapper commentMapper) {
-        this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
-        this.adRepository = adRepository;
-        this.commentMapper = commentMapper;
-    }
-
+    /**
+     * Получает все комментарии для объявления по его идентификатору.
+     *
+     * @param id идентификатор объявления
+     * @return список комментариев для указанного объявления
+     */
     @Override
-    public CommentsDto getComments(Long id) {
-        List<Comment> commentList = commentRepository.findAllByAdId(id);
-        List<CommentDto> commentDtoList= commentList.stream()
-                .map(commentMapper::toDto)
-                .toList();
-        CommentsDto commentsDto = new CommentsDto();
-        commentsDto.setResults(commentDtoList);
-        commentsDto.setCount(commentDtoList.size());
-        return commentsDto;
+    public List<Comment> getAllCommentsByAdId(Integer id) {
+        Ad ad = adsService.getAdById(id);
+
+        return commentRepository.findAllByAd(ad);
     }
 
+    /**
+     * Добавляет комментарий к объявлению по его идентификатору.
+     *
+     * @param id идентификатор объявления
+     * @param username имя пользователя, добавляющего комментарий
+     * @param commentDTO данные комментария
+     * @return добавленный комментарий
+     */
     @Override
-    public CommentDto createComment(Long id, CreateOrUpdateComment createOrUpdateCommentDto, String email) {
-        Ad ad = adRepository.findById(id)
-                .orElseThrow(() -> new AdsNotFoundException("Ads not found"));
-        Comment comment = commentMapper.toCommentFromCreateComment(createOrUpdateCommentDto);
-        comment.setAd(ad);
-        comment.setCreatedAt(LocalDateTime.now());
-        comment.setUser(userRepository.findByEmail(email).get());
-        commentRepository.save(comment);
-        log.info("Добавлен комментарий: " + comment.getId());
-        return commentMapper.toDto(comment);
+    public Comment addCommentToAdByItsId(Integer id, String username, CreateOrUpdateCommentDTO commentDTO) {
+        Ad ad = adsService.getAdById(id);
+        User user = userService.findUserByEmail(username);
+
+        Comment newComment = commentMapper.createOrUpdateCommentDTOToComment(commentDTO);
+        newComment.setUser(user);
+        newComment.setAd(ad);
+
+        return commentRepository.save(newComment);
     }
 
+    /**
+     * Удаляет комментарий по его идентификатору.
+     *
+     * @param adId идентификатор объявления
+     * @param commentId идентификатор комментария
+     * @param username имя пользователя, запрашивающего удаление
+     * @return статус удаления
+     */
     @Override
     @Transactional
-    public void removeComment(Long adId, Long id) {
-        commentRepository.deleteByAdIdAndId(adId, id);
-        log.info("Удален комментарий с id: " + id);
+    public HttpStatus deleteAdCommentByItsId(Integer adId, Integer commentId, String username) {
+        Ad foundAd = adsService.getAdById(adId);
+        Comment foundComment = findCommentById(commentId);
+
+        if (!foundComment.getAd().equals(foundAd)) {
+            return HttpStatus.NOT_FOUND;
+        }
+
+        User foundUser = userService.findUserByEmail(username);
+        Role userRole = foundUser.getRole();
+        boolean isCommentAuthor = (foundComment.getUser() == foundUser);
+        boolean userHasPermit = (isCommentAuthor || userRole == Role.ADMIN);
+
+        if (userHasPermit) {
+            commentRepository.delete(commentId);
+            return HttpStatus.OK;
+        } else {
+            return HttpStatus.FORBIDDEN;
+        }
     }
 
+
+    /**
+     * Обновляет комментарий по его идентификатору.
+     *
+     * @param adId идентификатор объявления
+     * @param commentId идентификатор комментария
+     * @param commentDTO данные для обновления комментария
+     * @param username имя пользователя, запрашивающего обновление
+     * @return обновленный комментарий в формате {@link ResponseEntity}
+     */
     @Override
-    public CommentDto updateComment(Long adId, Long id, CreateOrUpdateComment createOrUpdateCommentDto) {
-        log.info("Пытаемся найти комментарий к объявлению с adId: " + adId + " по id: " + id);
-        Comment comment = commentRepository.findCommentByAdIdAndId(adId, id)
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
-        comment.setText(createOrUpdateCommentDto.getText());
-        commentRepository.save(comment);
-        log.info("Обновили комментарий с id: " + id);
-        return commentMapper.toDto(comment);
+    public ResponseEntity<CommentDTO> updateAdCommentByItsId(
+            Integer adId,
+            Integer commentId,
+            CreateOrUpdateCommentDTO commentDTO,
+            String username
+    ) {
+        Ad foundAd = adsService.getAdById(adId);
+        Comment foundComment = findCommentById(commentId);
+
+        if (!foundComment.getAd().equals(foundAd)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        User foundUser = userService.findUserByEmail(username);
+        Role userRole = foundUser.getRole();
+        boolean isCommentAuthor = (foundComment.getUser() == foundUser);
+        boolean userHasPermit = (isCommentAuthor || userRole == Role.ADMIN);
+
+        if (userHasPermit) {
+            Comment updateComment = commentMapper.createOrUpdateCommentDTOToComment(commentDTO);
+
+            foundComment.setText(updateComment.getText());
+            foundComment.setUser(foundUser);
+            foundComment.setCreatedAt(updateComment.getCreatedAt());
+
+            Comment savedComment = commentRepository.save(foundComment);
+
+            return ResponseEntity.ok(commentMapper.commentToCommentDTO(savedComment));
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
-    @Override
-    public CommentsDto getCommentsFromUserName(String userName) {
-        log.info("Пытаемся найти все комментарии по пользователю с именем: " + userName);
-        List<Comment> commentList = commentRepository.findAllByUser(userRepository.findByEmail(userName)
-                .orElseThrow(() -> new UserWithEmailNotFoundException("User not found")));
-        List<CommentDto> commentDtoList= commentList.stream()
-                .map(commentMapper::toDto)
-                .toList();
-        CommentsDto commentsDto = new CommentsDto();
-        commentsDto.setResults(commentDtoList);
-        commentsDto.setCount(commentDtoList.size());
-        return commentsDto;
+    /**
+     * Находит комментарий по его идентификатору.
+     *
+     * @param id идентификатор комментария
+     * @return найденный комментарий
+     * @throws AdsCommentNotFoundException если комментарий не найден
+     */
+    private Comment findCommentById(Integer id) {
+        return commentRepository.findByPk(id)
+                .orElseThrow(() -> new AdsCommentNotFoundException("Comment with id " + id + " not found."));
     }
 
-    @Override
-    public String getUserNameOfComment(Long id) {
-        log.info("Пытаемся найти комментарий для пользователя с id: " + id);
-        return commentRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found"))
-                .getUser().getEmail();
-    }
 }

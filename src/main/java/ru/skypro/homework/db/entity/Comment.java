@@ -1,35 +1,54 @@
 package ru.skypro.homework.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Objects;
 
 @Entity
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Table(name = "comments")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 public class Comment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer pk;                     // Уникальный идентификатор комментария
+    @Column(name = "created_at")
+    private Date createdAt;                 // Дата и время создания комментария
+    private String text;                    // Текст комментария
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;                      // Пользователь, оставивший комментарий
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ad_id")
+    private Ad ad;                          // Объявление, к которому относится этот комментарий
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return Objects.equals(text, comment.text);
+    }
 
-    @Column(nullable = false)
-    private String text;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(text);
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "ads_id")
-    private Ad ad;
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "pk=" + pk +
+                ", createdAt=" + createdAt +
+                ", text='" + text + '\'' +
+                ", user=" + user +
+                ", ad=" + ad +
+                '}';
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 }

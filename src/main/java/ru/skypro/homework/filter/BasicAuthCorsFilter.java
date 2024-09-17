@@ -18,9 +18,8 @@ public class BasicAuthCorsFilter extends OncePerRequestFilter {
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        // Добавляет заголовок, позволяющий отправлять учетные данные (cookies) через CORS
         httpServletResponse.addHeader("Access-Control-Allow-Credentials", "true");
-        // Продолжает выполнение следующего фильтра в цепочке
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
+
 }
